@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "file": "^0.2.2",
+    "git-populate": "file:",
     "json": "^11.0.0",
     "jsonfile": "^6.1.0",
     "moment": "^2.30.1",

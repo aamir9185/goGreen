@@ -1,43 +1,34 @@
-import jsonfile from "jsonfile"
-import moment from "moment"
-import simpleGit from "simple-git"
-import random from "random"
+import jsonfile from "jsonfile";
+import moment from "moment";
+import simpleGit from "simple-git";
 
-const path = "./data.json"
+const path = "./data.json";
 
-const makeCommits = (n) => {
-  if (n === 0) return simpleGit().push(); 
+const commitDates = [
+  moment("2025-02-27"),
+  moment("2025-02-28"),
+];
 
-  const startDate = moment("2024-01-01"); 
-  const endDate = moment("2024-12-31");   
-
-  const randomDate = moment(startDate).add(random.int(0, endDate.diff(startDate, "days")), "days");
-
-  if (random.float() < 0.3) {
-    return makeCommits(n); 
+const makeCommits = (dateIndex, remainingCommits) => {
+  if (dateIndex >= commitDates.length) {
+    return simpleGit().push(); // Push and exit when done
+  }
+  
+  if (remainingCommits === 0) {
+    return makeCommits(dateIndex + 1, 3); // Move to next date
   }
 
-  const dateString = randomDate.format();
+  const dateString = commitDates[dateIndex].format();
+  console.log(`Committing on: ${dateString}, Remaining: ${remainingCommits}`);
 
-  const commitsToday = random.int(1, 5); 
-
-  console.log(`Committing ${commitsToday} times on: ${dateString}`);
-
-  const commitRecursively = (remainingCommits) => {
-    if (remainingCommits === 0) {
-      return makeCommits(n - commitsToday)
-    }
-
-    const data = { date: dateString };
-
-    jsonfile.writeFile(path, data, () => {
-      simpleGit()
-        .add([path])
-        .commit(dateString, { "--date": dateString }, () => commitRecursively(remainingCommits - 1));
-    });
-  };
-
-  commitRecursively(commitsToday);
+  const data = { date: dateString };
+  jsonfile.writeFile(path, data, () => {
+    simpleGit()
+      .add([path])
+      .commit(dateString, { "--date": dateString }, () => {
+        makeCommits(dateIndex, remainingCommits - 1); // Continue committing
+      });
+  });
 };
 
-makeCommits(200);
+makeCommits(0, 3);
