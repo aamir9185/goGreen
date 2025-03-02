@@ -5,8 +5,8 @@ import simpleGit from "simple-git";
 const path = "./data.json";
 
 const commitDates = [
-  moment("2025-02-27"),
-  moment("2025-02-28"),
+  moment("2025-03-01"),
+  moment("2025-03-01"),
 ];
 
 const makeCommits = (dateIndex, remainingCommits) => {
