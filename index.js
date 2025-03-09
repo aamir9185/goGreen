@@ -3,19 +3,22 @@ import moment from "moment";
 import simpleGit from "simple-git";
 
 const path = "./data.json";
+const git = simpleGit();
 
-const commitDates = [
-  moment("2025-03-01"),
-  moment("2025-03-01"),
-];
+// Generate dates from March 3 to March 9
+const commitDates = [];
+for (let i = 0; i < 7; i++) {
+  commitDates.push(moment("2025-03-03").add(i, "days"));
+}
 
+// Function to create commits
 const makeCommits = (dateIndex, remainingCommits) => {
   if (dateIndex >= commitDates.length) {
-    return simpleGit().push(); // Push and exit when done
+    return git.push(); // Push changes after all commits are done
   }
-  
+
   if (remainingCommits === 0) {
-    return makeCommits(dateIndex + 1, 3); // Move to next date
+    return makeCommits(dateIndex + 1, 3); // Move to the next date
   }
 
   const dateString = commitDates[dateIndex].format();
@@ -23,8 +26,7 @@ const makeCommits = (dateIndex, remainingCommits) => {
 
   const data = { date: dateString };
   jsonfile.writeFile(path, data, () => {
-    simpleGit()
-      .add([path])
+    git.add([path])
       .commit(dateString, { "--date": dateString }, () => {
         makeCommits(dateIndex, remainingCommits - 1); // Continue committing
       });
